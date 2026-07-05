@@ -1,0 +1,212 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Check your GG Mouse Pro account premium status and order details.">
+    <meta name="keywords" content="gg mouse pro, gg mouse pro download, gg mouse pro apk, gg mouse pro app, gg mouse pro settings, gg mouse pro sensitivity, gg mouse pro for android, gg mouse pro ios, gg mouse pro free fire, gg mouse pro pubg, gg mouse pro bgmi, gg mouse pro cod mobile, gg mouse pro key mapping, gg mouse pro keyboard mouse mobile, gg mouse pro setup, gg mouse pro tutorial, gg mouse pro best settings, gg mouse pro pro settings, gg mouse pro sensitivity code, gg mouse pro config, gg mouse pro config file, gg mouse pro latest version, gg mouse pro update, gg mouse pro official, gg mouse pro gameplay, gg mouse pro aim settings, gg mouse pro headshot settings, gg mouse pro aim assist, gg mouse pro controller setup, gg mouse pro how to use, how to setup gg mouse pro, how to download gg mouse pro, how to install gg mouse pro, how to use keyboard mouse on mobile, keyboard mouse mobile gaming, mobile keyboard mouse setup, play mobile games with keyboard mouse, gg mouse pro review, gg mouse pro tips and tricks, gg mouse pro best key mapping, gg mouse pro free fire settings, gg mouse pro bgmi settings, gg mouse pro cod settings, gg mouse pro sensitivity settings, gg mouse pro gaming setup, gg mouse pro lag fix, gg mouse pro best configuration, gg mouse pro mobile gaming tool, gg mouse pro android setup">
+    <title>GG Mouse Pro</title>
+    <link rel="icon" href="https://dl.dropboxusercontent.com/scl/fi/fpqccl4ca6gu891fwlsy4/1736958747516.jpeg?rlkey=ikdvvjh8at60wnxmibmxqzesk&dl=0" type="image/jpeg">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="naagin.css">
+</head>
+
+<body>
+    <div class="container">
+<div class="logo">
+            <img src="https://dl.dropboxusercontent.com/scl/fi/fpqccl4ca6gu891fwlsy4/1736958747516.jpeg?rlkey=ikdvvjh8at60wnxmibmxqzesk&dl=0" alt="GG Mouse Pro Logo">
+            <div class="loader-container">
+              <div class="section-path loader-small">
+                <div class="globe">
+                  <div class="wrapper">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                </div>
+              </div>
+             </div>
+        </div>
+           <!-- From Uiverse.io by JkHuger --> 
+            
+        <h3>Check Account Premium and Order Status</h3>
+        <p>To check whether the user is premium:</p>
+        <input id="account_username" class="input-field" type="text" placeholder="Enter email here">
+        <div class="button-row">
+            <button onclick="pasteFromClipboard()">Paste</button>
+            <button onclick="checkPremium()">Check Premium</button>
+        </div>
+
+        <p>To see the order detail (only works for order after Feb.7 2025)</p>
+        <p id="user_email_text"></p>
+        <input id="order_id" class="input-field" type="text" placeholder="Enter order id here. i.e. GPA.1234-5678">
+        <div class="button-row">
+            <button onclick="pasteOrderFromClipboard()">Paste</button>
+            <button onclick="checkOrder()">Check Order</button>
+        </div>
+
+        <div class="footer">
+            <p>Powered by <a href="www.ggmousepro.in">GG Mouse Pro</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Determine API base URL dynamically based on environment.
+        // - Localhost/Local IP: Use direct HTTP to the API.
+        // - Production (Vercel): Use relative path to proxy through vercel.json to avoid Mixed Content/CORS issues.
+        const isLocal = window.location.hostname === "localhost" || 
+                        window.location.hostname === "127.0.0.1" || 
+                        window.location.hostname.startsWith("192.168.") || 
+                        window.location.hostname.startsWith("10.") ||
+                        window.location.protocol === "file:";
+
+        const API_BASE = isLocal ? "http://api.gmp.jyyxt.online" : "";
+
+        function checkPremium() {
+            let username = document.getElementById("account_username").value.trim();
+            if (username === "") {
+                alert("Please enter a valid email address.");
+                return;
+            }
+
+            console.log("Checking premium for:", username, "at base:", API_BASE || "(relative proxy)");
+
+            $.ajax({
+                type: 'GET',
+                url: API_BASE + '/api/v3/users/is_premium/' + username,
+                timeout: 10000, // 10 second timeout
+                success: function(responseData, textStatus, jqXHR) {
+                    console.log("Premium check success:", responseData);
+                    if (responseData && responseData.data && responseData.data.premium) {
+                        alert("The user is premium!! O usuário é premium!!");
+                    } else {
+                        alert("Not premium:( Não é premium :(");
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error("Premium check error:", {
+                        url: API_BASE + '/api/v3/users/is_premium/' + username,
+                        status: jqXHR.status,
+                        textStatus: textStatus,
+                        error: errorThrown,
+                        response: jqXHR.responseText
+                    });
+                    
+                    let errorMsg = "Failed to check user premium.\n";
+                    if (jqXHR.status === 0) {
+                        errorMsg += "Network error. This usually happens if the API is blocked or offline.\n\n" +
+                                    "If on Vercel: Ensure vercel.json is deployed.\n" +
+                                    "If on GitHub Pages: Direct HTTP calls are blocked on HTTPS sites.";
+                    } else if (jqXHR.status === 403) {
+                        errorMsg += "Access Forbidden (403). The server might be blocking requests from this origin.";
+                    } else {
+                        errorMsg += "Status: " + (jqXHR.status || "Unknown") + " (" + textStatus + ")";
+                    }
+                    alert(errorMsg);
+                }
+            });
+        }
+
+        function checkOrder() {
+            let orderNum = document.getElementById("order_id").value.trim();
+            if (!orderNum.startsWith("GPA")) {
+                alert("Please enter a valid order id. It should start with GPA.");
+                return;
+            }
+
+            console.log("Checking order:", orderNum, "at base:", API_BASE || "(relative proxy)");
+
+            $.ajax({
+                type: 'GET',
+                url: API_BASE + '/api/v3/orders/' + orderNum,
+                timeout: 10000,
+                success: function(responseData, textStatus, jqXHR) {
+                    console.log("Order check success:", responseData);
+                    
+                    // Safe access with defaults
+                    const email = responseData.userEmail || "Unknown";
+                    const days = responseData.daysContain || "0";
+                    const expire = responseData.userSubscriptionExpireTime || "Unknown";
+                    const date = responseData.purchaseDate || "Unknown";
+
+                    try {
+                        if (responseData.userEmail) {
+                            navigator.clipboard.writeText(email);
+                        }
+                    } catch (e) {
+                        console.warn("Clipboard copy failed:", e);
+                    }
+
+                    alert("The order contains " + days + " days premium subscription.\n" +
+                          "The order is credit to account: " + email + ".\n" +
+                          "The account current expire time: " + expire + ".\n" +
+                          "Purchase date is: " + date + "\n\n" +
+                          "The user's email is automatically copied to your clipboard for you to paste conveniently");
+                    
+                    document.getElementById("user_email_text").textContent = "User email to paste manually: \n" + email;
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error("Order check error:", {
+                        url: API_BASE + '/api/v3/orders/' + orderNum,
+                        status: jqXHR.status,
+                        textStatus: textStatus,
+                        error: errorThrown,
+                        response: jqXHR.responseText
+                    });
+
+                    if (jqXHR.status === 400) {
+                        alert("Order not found. This order doesn't exist or is made before Feb.7 2025");
+                    } else {
+                        let errorMsg = "Failed to check order.\n";
+                        if (jqXHR.status === 0) {
+                            errorMsg += "Network error. This usually happens if the API is blocked or offline.";
+                        } else {
+                            errorMsg += "Status: " + (jqXHR.status || "Unknown") + " (" + textStatus + ")";
+                        }
+                        alert(errorMsg);
+                    }
+                }
+            });
+        }
+
+        // PASTE button functionality
+        async function pasteFromClipboard() {
+            try {
+                const text = await navigator.clipboard.readText(); // Read from clipboard
+                document.getElementById("account_username").value = text; // Paste into input field
+            } catch (error) {
+                alert("Failed to read from clipboard. Please allow clipboard permissions.");
+            }
+        }
+        async function pasteOrderFromClipboard() {
+            try {
+                const text = await navigator.clipboard.readText(); // Read from clipboard
+                document.getElementById("order_id").value = text; // Paste into input field
+            } catch (error) {
+                alert("Failed to read from clipboard. Please allow clipboard permissions.");
+            }
+        }
+        // CLEAR button functionality
+        function clearInput() {
+            document.getElementById("account_username").value = ""; // Clear the input field
+        }
+
+    </script>
+
+</body>
+</html>
